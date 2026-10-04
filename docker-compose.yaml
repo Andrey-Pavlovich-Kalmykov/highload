@@ -55,3 +55,10 @@ services:
         condition: service_healthy
       grafana:
         condition: service_healthy
+
+  load-tester:
+    build:
+      context: ./load_tester
+    depends_on:
+      app:
+        condition: service_healthy
