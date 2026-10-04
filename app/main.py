@@ -4,6 +4,16 @@ from typing import List, Dict, Any
 
 app = FastAPI(title="HW1 Simple CRUD API")
 
+# Import the metrics library
+from metrics import PrometheusMiddleware, generate_latest, CONTENT_TYPE_LATEST
+from fastapi.responses import Response
+
+app.add_middleware(PrometheusMiddleware)
+
+@app.get("/metrics", include_in_schema=False)
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
 # In-memory хранилище
 items_db: Dict[int, Dict[str, Any]] = {}
 current_id = 1
