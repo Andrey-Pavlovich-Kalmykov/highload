@@ -46,3 +46,12 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  dashboard-generator:
+    build:
+      context: ./generator
+    depends_on:
+      app:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
