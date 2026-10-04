@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./app
+    ports:
+      - "8000:8000"
+    environment:
+      - POD_NUMBER=pod-1
+      - DATACENTER=dc-msk
+      - SERVICE_NAME=hw1-crud-app
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.93.0
+    ports:
+      - "8428:8428"
+    volumes:
+      - ./config/prometheus.yml:/prometheus.yml
+    command:
+      - "-promscrape.config=/prometheus.yml"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8428/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    volumes:
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  dashboard-generator:
+    build:
+      context: ./generator
+    depends_on:
+      app:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+
+  load-tester:
+    build:
+      context: ./load_tester
+    depends_on:
+      app:
+        condition: service_healthy
