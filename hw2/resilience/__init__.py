@@ -2,9 +2,11 @@ from resilience.backoff import ExponentialBackoffRetryClient
 from resilience.config import (
     DefaultConfig,
     ExponentialBackoffRetryConfig,
+    HedgingConfig,
     RetryConfig,
 )
 from resilience.default import DefaultClient
+from resilience.hedging import HedgingMultiClient
 from resilience.interfaces import (
     MultiResilienceClient,
     ResilienceClient,
@@ -27,6 +29,8 @@ __all__ = [
     "DefaultConfig",
     "ExponentialBackoffRetryClient",
     "ExponentialBackoffRetryConfig",
+    "HedgingConfig",
+    "HedgingMultiClient",
     "HttpResponseError",
     "LatencyBudgetExceeded",
     "MultiResilienceClient",

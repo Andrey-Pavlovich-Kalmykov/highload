@@ -57,3 +57,14 @@ class ExponentialBackoffRetryConfig(RetryConfig):
             raise ValueError("max_backoff must be greater than or equal to initial_backoff")
         if not math.isfinite(self.backoff_multiplier) or self.backoff_multiplier <= 1:
             raise ValueError("backoff_multiplier must be finite and greater than 1")
+
+
+@dataclass(frozen=True)
+class HedgingConfig:
+    latency_budget: float
+    hedging_delay: float
+
+    def __post_init__(self) -> None:
+        _validate_latency("latency_budget", self.latency_budget)
+        if not math.isfinite(self.hedging_delay) or self.hedging_delay < 0:
+            raise ValueError("hedging_delay must be a non-negative finite number")
