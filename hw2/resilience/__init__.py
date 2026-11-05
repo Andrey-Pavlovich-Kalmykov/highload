@@ -19,6 +19,7 @@ from resilience.models import (
     ServerResponseError,
 )
 from resilience.retry import RetryClient
+from resilience.round_robin import RoundRobinMultiClient
 
 __all__ = [
     "ClientResponseError",
@@ -34,6 +35,7 @@ __all__ = [
     "Response",
     "RetryClient",
     "RetryConfig",
+    "RoundRobinMultiClient",
     "ServerResponseError",
     "SubrequestSender",
 ]
