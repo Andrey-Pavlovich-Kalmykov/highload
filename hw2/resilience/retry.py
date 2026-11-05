@@ -17,6 +17,11 @@ class RetryClient(ResilienceClient):
     def __init__(self, config: RetryConfig) -> None:
         self._config = config
 
+    def _retry_delay(
+        self, error: RequestError, failures: int, timeouts: int
+    ) -> float:
+        return 0
+
     async def execute(self, sender: SubrequestSender) -> Response:
         loop = asyncio.get_running_loop()
         deadline = loop.time() + self._config.latency_budget
@@ -25,7 +30,7 @@ class RetryClient(ResilienceClient):
         timeouts = 0
         last_error: Optional[RequestError] = None
 
-        for _ in range(self._config.max_retries):
+        for attempt in range(self._config.max_retries):
             remaining = deadline - loop.time()
             if remaining <= 0:
                 raise LatencyBudgetExceeded(self._config.latency_budget) from last_error
@@ -56,6 +61,12 @@ class RetryClient(ResilienceClient):
                 if timeouts > self._config.timeout_budget:
                     raise
                 last_error = error
+
+            if attempt + 1 < self._config.max_retries:
+                delay = self._retry_delay(last_error, failures, timeouts)
+                remaining = deadline - loop.time()
+                if delay > 0 and remaining > 0:
+                    await asyncio.sleep(min(delay, remaining))
 
         assert last_error is not None
         raise last_error

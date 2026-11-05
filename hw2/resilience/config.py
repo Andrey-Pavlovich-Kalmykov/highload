@@ -41,3 +41,19 @@ class RetryConfig:
         _validate_latency(
             "subrequest_latency_budget", self.subrequest_latency_budget
         )
+
+
+@dataclass(frozen=True)
+class ExponentialBackoffRetryConfig(RetryConfig):
+    initial_backoff: float
+    max_backoff: float
+    backoff_multiplier: float = 2.0
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        _validate_latency("initial_backoff", self.initial_backoff)
+        _validate_latency("max_backoff", self.max_backoff)
+        if self.max_backoff < self.initial_backoff:
+            raise ValueError("max_backoff must be greater than or equal to initial_backoff")
+        if not math.isfinite(self.backoff_multiplier) or self.backoff_multiplier <= 1:
+            raise ValueError("backoff_multiplier must be finite and greater than 1")

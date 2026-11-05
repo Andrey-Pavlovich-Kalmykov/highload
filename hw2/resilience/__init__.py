@@ -1,4 +1,9 @@
-from resilience.config import DefaultConfig, RetryConfig
+from resilience.backoff import ExponentialBackoffRetryClient
+from resilience.config import (
+    DefaultConfig,
+    ExponentialBackoffRetryConfig,
+    RetryConfig,
+)
 from resilience.default import DefaultClient
 from resilience.interfaces import (
     MultiResilienceClient,
@@ -19,6 +24,8 @@ __all__ = [
     "ClientResponseError",
     "DefaultClient",
     "DefaultConfig",
+    "ExponentialBackoffRetryClient",
+    "ExponentialBackoffRetryConfig",
     "HttpResponseError",
     "LatencyBudgetExceeded",
     "MultiResilienceClient",
