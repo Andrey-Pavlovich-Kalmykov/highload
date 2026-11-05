@@ -1,4 +1,4 @@
-from resilience.config import DefaultConfig
+from resilience.config import DefaultConfig, RetryConfig
 from resilience.default import DefaultClient
 from resilience.interfaces import (
     MultiResilienceClient,
@@ -13,6 +13,7 @@ from resilience.models import (
     Response,
     ServerResponseError,
 )
+from resilience.retry import RetryClient
 
 __all__ = [
     "ClientResponseError",
@@ -24,6 +25,8 @@ __all__ = [
     "RequestError",
     "ResilienceClient",
     "Response",
+    "RetryClient",
+    "RetryConfig",
     "ServerResponseError",
     "SubrequestSender",
 ]
