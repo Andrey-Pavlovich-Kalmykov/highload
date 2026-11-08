@@ -68,3 +68,18 @@ class HedgingConfig:
         _validate_latency("latency_budget", self.latency_budget)
         if not math.isfinite(self.hedging_delay) or self.hedging_delay < 0:
             raise ValueError("hedging_delay must be a non-negative finite number")
+
+
+@dataclass(frozen=True)
+class CircuitBreakingConfig:
+    window_size: int
+    error_rate_threshold: float
+    cooldown: float
+
+    def __post_init__(self) -> None:
+        _validate_integer("window_size", self.window_size, 1)
+        if not math.isfinite(self.error_rate_threshold) or not (
+            0 <= self.error_rate_threshold <= 1
+        ):
+            raise ValueError("error_rate_threshold must be between 0 and 1")
+        _validate_latency("cooldown", self.cooldown)

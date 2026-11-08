@@ -23,7 +23,12 @@ class RoundRobinMultiClient(MultiResilienceClient):
     def __init__(self, strategy: ResilienceClient) -> None:
         self._strategy = strategy
 
+    def _create_sender(
+        self, senders: Sequence[SubrequestSender]
+    ) -> SubrequestSender:
+        return _RoundRobinSender(senders)
+
     async def execute(self, senders: Sequence[SubrequestSender]) -> Response:
         if not senders:
             raise ValueError("at least one sender is required")
-        return await self._strategy.execute(_RoundRobinSender(senders))
+        return await self._strategy.execute(self._create_sender(senders))

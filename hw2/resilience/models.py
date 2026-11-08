@@ -45,3 +45,8 @@ class LatencyBudgetExceeded(RequestError):
     def __init__(self, latency_budget: float) -> None:
         self.latency_budget = latency_budget
         super().__init__(f"latency budget of {latency_budget} seconds exhausted")
+
+
+class CircuitOpenError(RequestError):
+    def __init__(self) -> None:
+        super().__init__("all senders are temporarily unavailable")
